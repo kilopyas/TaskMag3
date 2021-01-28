@@ -27,16 +27,25 @@
                                name="coupon_code"
                                value="<?= $block->escapeHtmlAttr($block->getCouponCode()) ?>"
                                placeholder="<?= $block->escapeHtmlAttr(__('Enter discount code')) ?>"
+                               <?php if ($hasCouponCode) :?>
+                                   disabled="disabled"
+                                <?php endif; ?>
                         />
                     </div>
                 </div>
                 <div class="actions-toolbar">
+                    <?php if (!$hasCouponCode) :?>
                     <div class="primary">
                         <button class="action apply primary" type="button" value="<?= $block->escapeHtmlAttr(__('Apply Discount')) ?>">
                             <span><?= $block->escapeHtml(__('Apply Discount')) ?></span>
                         </button>
                     </div>
-
+                    <?php else :?>
+                        <div class="primary">
+                            <button  type="button" class="action cancel primary" value="<?= $block->escapeHtmlAttr(__('Cancel Coupon')) ?>"><span><?= $block->escapeHtml(__('Cancel Coupon')) ?></span></button>
+                        </div>
+                    <?php endif; ?>
+                    <?php echo $block->getCouponCode(); ?>
                 </div>
             </div>
             <?php if (!$hasCouponCode) : ?>
