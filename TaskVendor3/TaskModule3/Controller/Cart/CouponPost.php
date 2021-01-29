@@ -9,14 +9,46 @@ class CouponPost extends \Magento\Checkout\Controller\Cart\CouponPost
 
     public function execute()
     {
+        $escaper = $this->_objectManager->get(\Magento\Framework\Escaper::class);
+
+        if($this->getRequest()->getParam('code') !== null){
+            $cartQuote = $this->cart->getQuote();
+            $coupons = $cartQuote->getCouponCode();
+            error_log(__METHOD__."\n", 3, BP."/var/log/paulo.log");
+            return $this->_goBack();
+        }   
+
+
         $couponCodes = $this->getRequest()->getParam('remove') == 1
             ? ''
             : trim($this->getRequest()->getParam('coupon_code'));
 
         $cartQuote = $this->cart->getQuote();
-       
         $coupons = explode(",", $couponCodes);
+        // error_log(print_r($coupons, true)."here \n", 3, BP."/var/log/paulo.log");
         foreach($coupons as $couponCode){
+            $result = explode(",", $cartQuote->getCouponCode());
+            if(in_array($couponCode, $result)){
+                $this->messageManager->addErrorMessage(
+                    __(
+                        'The coupon code "%1" is already in use.',
+                        $escaper->escapeHtml($couponCode)
+                    )
+                );
+                continue;
+            }else{
+                $coupon = $this->couponFactory->create();
+                $coupon->load(trim($couponCode), 'code');
+                if($coupon['code'] == NULL){
+                    $this->messageManager->addErrorMessage(
+                        __(
+                            'The coupon code "%1" is not valid.',
+                            $escaper->escapeHtml($couponCode)
+                        )
+                    );
+                    continue;
+                }
+            }
             $oldCouponCode = $cartQuote->getCouponCode();
             $collectedCoupons = trim($oldCouponCode . ','.$couponCode, ',');
             $codeLength = strlen($couponCode);
@@ -29,13 +61,13 @@ class CouponPost extends \Magento\Checkout\Controller\Cart\CouponPost
 
                 $itemsCount = $cartQuote->getItemsCount();
                 if ($itemsCount) {
+                    //error_log("SULOD \n", 3, BP."/var/log/paulo.log");
                     $cartQuote->getShippingAddress()->setCollectShippingRates(true);
                     $cartQuote->setCouponCode($isCodeLengthValid ? $collectedCoupons : '')->collectTotals();
                     $this->quoteRepository->save($cartQuote);
                 }
 
                 if ($codeLength) {
-                    $escaper = $this->_objectManager->get(\Magento\Framework\Escaper::class);
                     $coupon = $this->couponFactory->create();
                     $coupon->load(trim($couponCode), 'code');
                     if (!$itemsCount) {

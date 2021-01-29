@@ -1,5 +1,15 @@
 <?php
-    $hasCouponCode = (bool) strlen($block->getCouponCode());
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+/**
+ * @var \Magento\Framework\View\Element\AbstractBlock $block
+ */
+
+// We should use strlen function because coupon code could be "0", converted to bool will lead to false
+$hasCouponCode = (bool) strlen($block->getCouponCode());
 ?>
 <div class="block discount"
      id="block-discount"
@@ -25,27 +35,43 @@
                                class="input-text"
                                id="coupon_code"
                                name="coupon_code"
-                               value="<?= $block->escapeHtmlAttr($block->getCouponCode()) ?>"
+                               value=""
                                placeholder="<?= $block->escapeHtmlAttr(__('Enter discount code')) ?>"
-                               <?php if ($hasCouponCode) :?>
-                                   disabled="disabled"
-                                <?php endif; ?>
                         />
                     </div>
+
+                    <br>
+
+                    <?php if ($hasCouponCode) :?>
+                    <?php 
+                        $coupons = explode(",", $block->getCouponCode()); 
+                        foreach($coupons as $coupon){
+                    ?>
+                        <div class="control">
+                        <a href="<?php echo $block->getUrl('checkout/cart/couponPost',['code'=> $coupon]) ?>">
+                            <input type="text"
+                                class="input-text"
+                                value="<?= $block->escapeHtmlAttr($coupon) ?>"
+                                placeholder="<?= $block->escapeHtmlAttr(__('Enter discount code')) ?>"
+                                disabled
+                            />
+                        </a>
+                        </div>
+                    <br>
+
+                    <?php }?>
+                    <?php endif; ?>
+
+
                 </div>
+
+                
                 <div class="actions-toolbar">
-                    <?php if (!$hasCouponCode) :?>
                     <div class="primary">
                         <button class="action apply primary" type="button" value="<?= $block->escapeHtmlAttr(__('Apply Discount')) ?>">
                             <span><?= $block->escapeHtml(__('Apply Discount')) ?></span>
                         </button>
                     </div>
-                    <?php else :?>
-                        <div class="primary">
-                            <button  type="button" class="action cancel primary" value="<?= $block->escapeHtmlAttr(__('Cancel Coupon')) ?>"><span><?= $block->escapeHtml(__('Cancel Coupon')) ?></span></button>
-                        </div>
-                    <?php endif; ?>
-                    <?php echo $block->getCouponCode(); ?>
                 </div>
             </div>
             <?php if (!$hasCouponCode) : ?>
@@ -54,3 +80,19 @@
         </form>
     </div>
 </div>
+
+<!-- <script>
+    require(['jquery', 'jquery/ui'], function($){
+        $(document).ready( function() {
+            $("#discount-coupon-form").submit(function(e){
+                $("#apply").prop('disabled', true);
+                var string = $("#coupon_code").val();
+                if($("#coupon_code").val() == '')
+                    string = string+""+ $("#coupon_code_front").val();
+                else
+                    string = string+","+ $("#coupon_code_front").val();
+                $("#coupon_code").val(string);
+            });
+        });
+    });
+</script> -->
