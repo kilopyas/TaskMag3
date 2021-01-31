@@ -93,7 +93,7 @@ class Discount extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
 
         $store = $this->storeManager->getStore($quote->getStoreId());
         $address = $shippingAssignment->getShipping()->getAddress();
-        error_log(__METHOD__."\n", 3, BP."/var/log/paulo.log");
+        // error_log(__METHOD__."\n", 3, BP."/var/log/paulo.log");
         if ($quote->currentPaymentWasSet()) {
             $address->setPaymentMethod($quote->getPayment()->getMethod());
         }

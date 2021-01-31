@@ -17,7 +17,7 @@ class CouponPost extends \Magento\Checkout\Controller\Cart\CouponPost
             error_log(__METHOD__."\n", 3, BP."/var/log/paulo.log");
             return $this->_goBack();
         }   
-
+        // $this->_eventManager->dispatch('taskvendor3_customobserver_coupon', ['custom_text' => 'Custom Observer']);
 
         $couponCodes = $this->getRequest()->getParam('remove') == 1
             ? ''

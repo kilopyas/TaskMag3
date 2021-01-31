@@ -48,7 +48,7 @@ $hasCouponCode = (bool) strlen($block->getCouponCode());
                         foreach($coupons as $coupon){
                     ?>
                         <div class="control">
-                        <a href="<?php echo $block->getUrl('checkout/cart/couponPost',['code'=> $coupon]) ?>">
+                        <a href="<?php echo $block->getUrl('checkout/cart/',['code'=> $coupon]) ?>" style="cursor:pointer">
                             <input type="text"
                                 class="input-text"
                                 value="<?= $block->escapeHtmlAttr($coupon) ?>"
